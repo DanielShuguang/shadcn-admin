@@ -1,4 +1,5 @@
-import { BarSeriesOption, LineSeriesOption, PieChart, LineChart } from 'echarts/charts'
+import { useDebounceEffect, useSize } from 'ahooks'
+import { BarSeriesOption, LineSeriesOption, PieChart, LineChart, BarChart } from 'echarts/charts'
 import {
   TitleComponent,
   TooltipComponent,
@@ -7,14 +8,16 @@ import {
   // 内置数据转换器组件 (filter, sort)
   TransformComponent,
   TitleComponentOption,
+  GridComponent,
   TooltipComponentOption,
   GridComponentOption,
   DatasetComponentOption
 } from 'echarts/components'
-import { ComposeOption } from 'echarts/core'
+import { ComposeOption, ECharts, init } from 'echarts/core'
 import { use } from 'echarts/core'
 import { LabelLayout, UniversalTransition } from 'echarts/features'
-import { SVGRenderer } from 'echarts/renderers'
+import { CanvasRenderer } from 'echarts/renderers'
+import { useEffect, useRef } from 'react'
 
 export type ECOption = ComposeOption<
   | BarSeriesOption
@@ -32,10 +35,46 @@ export function prepareEcharts() {
     TooltipComponent,
     DatasetComponent,
     TransformComponent,
+    GridComponent,
+    BarChart,
     LineChart,
     PieChart,
     LabelLayout,
     UniversalTransition,
-    SVGRenderer
+    CanvasRenderer
   ])
+}
+
+export function useEcharts<Dom extends HTMLElement = HTMLDivElement>(options: ECOption) {
+  const containerRef = useRef<Dom>(null)
+  const chartInstance = useRef<ECharts | null>(null)
+
+  function initEcharts() {
+    if (!containerRef.current) return
+
+    chartInstance.current?.dispose()
+    chartInstance.current = init(containerRef.current)
+  }
+
+  useEffect(() => {
+    initEcharts()
+    chartInstance.current?.setOption(options)
+
+    return () => {
+      chartInstance.current?.clear()
+      chartInstance.current?.dispose()
+    }
+  }, [options])
+
+  const size = useSize(containerRef)
+
+  useDebounceEffect(
+    () => {
+      chartInstance.current?.resize()
+    },
+    [size],
+    { wait: 500 }
+  )
+
+  return { containerRef, chartInstance }
 }
