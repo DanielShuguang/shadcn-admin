@@ -1,10 +1,9 @@
 'use client'
 
 import Spin from '@/components/Spin'
+import { cn } from '@/lib/utils'
 import { ECOption, useEcharts } from '@/utils/echarts'
-import { useDebounceEffect, useSize } from 'ahooks'
-import * as echarts from 'echarts/core'
-import { memo, useEffect, useMemo, useRef } from 'react'
+import { memo, useMemo, useRef } from 'react'
 
 export interface RankData {
   chart?: {
@@ -65,13 +64,17 @@ function RankPanel({ title, loading, data }: RankPanelProps) {
           <ul className="m-[25px_0_0] p-0 list-none">
             {Array.from({ length: 7 }).map((_, index) => (
               <li key={index} className="flex items-center mt-[16px]">
-                <span className="size-[20px] mt-[1.5px] mr-[16px] font-[600] leading-[20px] text-center rounded-[20px] text-[#fff] bg-[rgba(0,0,0,0.85)]">
+                <span
+                  className={cn(
+                    'size-[20px] text-[12px] mt-[1.5px] mr-[16px] font-[600] leading-[20px] text-center rounded-[20px]',
+                    index < 3 ? 'text-[#fff] bg-[rgba(0,0,0,0.85)]' : 'bg-[rgba(0,0,0,0.04)]'
+                  )}>
                   {index + 1}
                 </span>
                 <span className="flex-1 mr-[8px] overflow-hidden whitespace-nowrap text-ellipsis">
                   工专路 {index} 号店
                 </span>
-                <span>{count.current}</span>
+                <span>{count.current.toLocaleString()}</span>
               </li>
             ))}
           </ul>
