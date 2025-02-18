@@ -8,13 +8,13 @@ export default function AppFooter() {
     <footer className="">
       <div className="pt-[48px] pb-[24px] px-[16px] text-center">
         <div className="mb-[8px] text-[rgba(0,0,0,0.65)]">
-          <span className="mr-[8px]">Shadcn Admin</span>
+          <span className="mr-[8px]">Antd Admin</span>
           {/* TODO 设置 github 跳转地址 */}
           <Link href="/" className="mr-[8px] inline-block">
             <Github className="w-[14px] fill-[rgba(0,0,0,0.65)]" />
           </Link>
-          <Link href="https://ui.shadcn.com" target="_blank">
-            Shadcn UI
+          <Link href="https://ant.design" target="_blank">
+            Ant Design
           </Link>
         </div>
         <div className="text-[14px] text-[rgba(0,0,0,0.88)]">

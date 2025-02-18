@@ -1,14 +1,17 @@
 'use client'
 
 import { ArrowDownIcon, ArrowUpIcon } from 'lucide-react'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { CustomCard } from './CustomCard'
 import { ECOption, useEcharts } from '@/utils/echarts'
-import { Progress } from '@/components/ui/progress'
+import { Progress } from 'antd'
 
 function useInitVisitChart() {
-  const options = useMemo<ECOption>(
-    () => ({
+  const [options, setOptions] = useState<ECOption>({})
+  const { chartInstance, containerRef } = useEcharts(options)
+
+  useEffect(() => {
+    setOptions({
       color: ['#d786ff'],
       tooltip: {
         trigger: 'axis',
@@ -39,18 +42,19 @@ function useInitVisitChart() {
           data: [140, 232, 101, 264, 90, 340, 250]
         }
       ]
-    }),
-    []
-  )
-
-  const { chartInstance, containerRef } = useEcharts(options)
+    })
+  }, [])
 
   return { chartInstance, containerRef }
 }
 
 function usePayloadChart() {
-  const options = useMemo<ECOption>(
-    () => ({
+  const [options, setOptions] = useState<ECOption>({})
+
+  const { chartInstance, containerRef } = useEcharts(options)
+
+  useEffect(() => {
+    setOptions({
       color: ['#2188ff'],
       tooltip: {
         trigger: 'axis',
@@ -76,11 +80,8 @@ function usePayloadChart() {
           data: [100, 52, 200, 334, 390, 330, 220]
         }
       ]
-    }),
-    []
-  )
-
-  const { chartInstance, containerRef } = useEcharts(options)
+    })
+  }, [])
 
   return { chartInstance, containerRef }
 }
@@ -148,10 +149,9 @@ export default function Overview() {
           <div className="h-full flex items-center">
             <Progress
               className="w-full"
-              value={66}
-              innerProps={{ className: 'bg-[linear-gradient(to_right,#108ee9,#87d068)]' }}
+              percent={66}
+              strokeColor={{ from: '#108ee9', to: '#87d068' }}
             />
-            <span className="ml-[8px] text-[14px]">66%</span>
           </div>
         }
         footer={

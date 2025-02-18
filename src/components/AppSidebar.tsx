@@ -1,121 +1,98 @@
-import React from 'react'
-import {
-  Sidebar,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubItem
-} from './ui/sidebar'
-import { ChevronDownIcon, Grid3x3Icon, PencilLineIcon, TrainFrontIcon } from 'lucide-react'
-import { match } from 'ts-pattern'
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './ui/collapsible'
-import Link from 'next/link'
+'use client'
 
-interface SidebarItem {
-  title: string
-  url?: string
-  icon?: React.ComponentType<any>
-  children?: SidebarItem[]
-}
+import React, { useEffect, useState } from 'react'
+import { ChevronLeftIcon, Grid3x3Icon, PencilLineIcon, TrainFrontIcon } from 'lucide-react'
+import { Menu, MenuProps } from 'antd'
+import { useRouter, usePathname } from 'next/navigation'
+import { clone, uniq } from 'ramda'
+import { cn } from '@/lib/utils'
 
-const items: SidebarItem[] = [
+type MenuItem = Required<MenuProps>['items'][number]
+
+const items: MenuItem[] = [
   {
-    title: 'Dashboard',
-    icon: TrainFrontIcon,
+    label: 'Dashboard',
+    key: '/dashboard',
+    icon: <TrainFrontIcon size="16px" />,
     children: [
-      { title: '分析页', url: '/dashboard/analysis' },
-      { title: '监控页', url: '/dashboard/monitor' },
-      { title: '工作台', url: '/dashboard/workplace' }
+      { label: '分析页', key: '/dashboard/analysis' },
+      { label: '监控页', key: '/dashboard/monitor' },
+      { label: '工作台', key: '/dashboard/workplace' }
     ]
   },
   {
-    title: '表单页',
-    icon: PencilLineIcon,
+    label: '表单页',
+    key: '/form',
+    icon: <PencilLineIcon size="16px" />,
     children: [
-      { title: '基础表单', url: '/form/basic' },
-      { title: '分步表单', url: '/form/step' },
-      { title: '高级表单', url: '/form/advanced' }
+      { label: '基础表单', key: '/form/basic' },
+      { label: '分步表单', key: '/form/step' },
+      { label: '高级表单', key: '/form/advanced' }
     ]
   },
   {
-    title: '列表页',
-    icon: Grid3x3Icon,
+    label: '列表页',
+    key: '/list',
+    icon: <Grid3x3Icon size="16px" />,
     children: [
-      { title: '查询表格', url: '/list/table' },
-      { title: '标准列表', url: '/list/basic' },
-      { title: '卡片列表', url: '/list/card' }
+      { label: '查询表格', key: '/list/table' },
+      { label: '标准列表', key: '/list/basic' },
+      { label: '卡片列表', key: '/list/card' }
     ]
   }
 ]
 
-function getButtonContent(item: SidebarItem, isParent?: boolean) {
-  return match(item.url)
-    .when(
-      val => val,
-      url => (
-        <Link href={url!}>
-          {item.icon && <item.icon />}
-          <span>{item.title}</span>
-        </Link>
-      )
-    )
-    .otherwise(() => (
-      <span>
-        {item.icon && <item.icon />}
-        <span>{item.title}</span>
-        {isParent && (
-          <ChevronDownIcon className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
-        )}
-      </span>
-    ))
-}
-
-function renderSidebarGroup(menus: SidebarItem[], isChild?: boolean) {
-  return (
-    <>
-      {menus.map(item => {
-        if (item.children?.length) {
-          return (
-            <SidebarMenu key={item.title}>
-              <Collapsible defaultOpen className="group/collapsible">
-                <SidebarMenuItem>
-                  <CollapsibleTrigger className="w-[90%]">
-                    <SidebarMenuButton asChild>{getButtonContent(item, true)}</SidebarMenuButton>
-                  </CollapsibleTrigger>
-                </SidebarMenuItem>
-                <CollapsibleContent>
-                  <SidebarMenuSub>{renderSidebarGroup(item.children, true)}</SidebarMenuSub>
-                </CollapsibleContent>
-              </Collapsible>
-            </SidebarMenu>
-          )
-        }
-        if (isChild) {
-          return (
-            <SidebarMenuSubItem key={item.title}>
-              <SidebarMenuButton asChild>{getButtonContent(item)}</SidebarMenuButton>
-            </SidebarMenuSubItem>
-          )
-        }
-        return (
-          <SidebarMenuItem key={item.title}>
-            <SidebarMenuButton asChild>{getButtonContent(item)}</SidebarMenuButton>
-          </SidebarMenuItem>
-        )
-      })}
-    </>
-  )
-}
-
 export default function AppSidebar() {
+  const [selectedMenuKey, setSelectedMenuKey] = useState<string[]>([])
+  const [openMenuKeys, setOpenMenuKeys] = useState<string[]>([])
+  const [inlineCollapsed, setInlineCollapsed] = useState(false)
+  const router = useRouter()
+  const pathname = usePathname()
+
+  const handleClick: MenuProps['onClick'] = menu => {
+    if (menu.keyPath.length === 1) return
+
+    router.push(menu.key)
+  }
+
+  useEffect(() => {
+    setSelectedMenuKey([pathname])
+    setOpenMenuKeys(pre => {
+      if (pre.includes(pathname)) return pre
+
+      const newList = clone(pre)
+      pathname.split('/').forEach((_, index, arr) => {
+        if (index === 0) return
+        const key = arr.slice(0, index + 1).join('/')
+        if (!newList.includes(key)) newList.push(key)
+      })
+      return uniq(newList)
+    })
+  }, [pathname])
+
   return (
-    <Sidebar>
-      <SidebarHeader></SidebarHeader>
-      <SidebarMenu>{renderSidebarGroup(items)}</SidebarMenu>
-      <SidebarFooter></SidebarFooter>
-    </Sidebar>
+    <div className={cn('!h-full relative', inlineCollapsed ? 'w-[65px]' : 'w-[257px]')}>
+      <div
+        className="flex items-center justify-center size-[24px] rounded-[24px] z-[101] cursor-pointer absolute bg-[#fff] shadow-md right-[-12px] top-[50px]"
+        onClick={() => setInlineCollapsed(!inlineCollapsed)}>
+        <ChevronLeftIcon
+          className={cn('text-[rgba(0,0,0,0.25)] hover:text-[rgba(0,0,0,0.65)] transition-all', {
+            'rotate-180': inlineCollapsed
+          })}
+          size="1em"
+        />
+      </div>
+      <Menu
+        className="!w-full"
+        items={items}
+        mode="inline"
+        selectedKeys={selectedMenuKey}
+        defaultSelectedKeys={selectedMenuKey}
+        openKeys={openMenuKeys}
+        inlineCollapsed={inlineCollapsed}
+        onOpenChange={setOpenMenuKeys}
+        onClick={handleClick}
+      />
+    </div>
   )
 }

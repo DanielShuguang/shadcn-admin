@@ -1,6 +1,5 @@
 'use client'
 
-import Spin from '@/components/Spin'
 import { cn } from '@/lib/utils'
 import { ECOption, useEcharts } from '@/utils/echarts'
 import { memo, useMemo, useRef } from 'react'
@@ -56,7 +55,7 @@ function RankPanel({ title, loading, data }: RankPanelProps) {
   const count = useRef(Math.ceil(Math.random() * 800000 + 100000))
 
   return (
-    <Spin className="flex h-[300px] w-full" spinning={loading}>
+    <div className="flex h-[300px] w-full">
       <div className="flex-[66.66%] h-full" ref={containerRef}></div>
       {!loading && (
         <div className="size-full flex-[33.33%] p-[0_32px_32px_72px] text-[14px]">
@@ -80,7 +79,7 @@ function RankPanel({ title, loading, data }: RankPanelProps) {
           </ul>
         </div>
       )}
-    </Spin>
+    </div>
   )
 }
 
