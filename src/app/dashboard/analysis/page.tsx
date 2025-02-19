@@ -1,6 +1,7 @@
 import HotSearch from './HotSearch'
 import Overview from './Overview'
 import Rank from './Rank'
+import SalesCategoryProportion from './SalesCategoryProportion'
 
 export default function Analysis() {
   return (
@@ -12,7 +13,7 @@ export default function Analysis() {
           <HotSearch />
         </div>
         <div className="min-[1200px]:flex-[50%] min-[992px]:flex-[100%]">
-          <HotSearch />
+          <SalesCategoryProportion />
         </div>
       </div>
     </div>
