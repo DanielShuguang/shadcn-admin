@@ -33,7 +33,7 @@ export default function RootLayout({
 
   return (
     <html lang="zh-CN">
-      <body className="antialiased overflow-x-hidden">
+      <body className="antialiased overflow-x-hidden bg-[#f5f5f5]">
         <ConfigProvider locale={zhCN}>
           <AntdRegistry>
             <QueryClientProvider client={queryClient.current}>
