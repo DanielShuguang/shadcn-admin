@@ -1,6 +1,6 @@
 'use client'
 
-import { Table } from 'antd'
+import { Skeleton, Table } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { mockSearchKeywordsRank } from './mock'
 import { useQuery } from '@tanstack/react-query'
@@ -39,5 +39,14 @@ function useSearchKeywordsRank() {
 export default function SearchKeywordsRank() {
   const { columns, keywordsRankData, isLoading } = useSearchKeywordsRank()
 
-  return <Table columns={columns} size="small" loading={isLoading} dataSource={keywordsRankData} />
+  return (
+    <Skeleton loading={isLoading} paragraph={{ rows: 4 }}>
+      <Table
+        columns={columns}
+        size="small"
+        pagination={{ pageSize: 5 }}
+        dataSource={keywordsRankData}
+      />
+    </Skeleton>
+  )
 }

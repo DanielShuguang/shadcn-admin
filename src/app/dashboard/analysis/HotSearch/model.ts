@@ -4,3 +4,8 @@ export interface KeywordRankModel {
   user: number
   week: number
 }
+
+export interface SearchDataModel {
+  count: number
+  date: string
+}

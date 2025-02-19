@@ -4,10 +4,9 @@ import { ECOption, useEcharts } from '@/utils/echarts'
 import { InfoIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { mockSearchCharts } from './mock'
-import { Spin, Tooltip } from 'antd'
+import { Skeleton, Tooltip } from 'antd'
 import { useQuery } from '@tanstack/react-query'
 import { graphic } from 'echarts/core'
-import dayjs from 'dayjs'
 
 function useUserSearchCharts() {
   const [options, setOptions] = useState<ECOption>({})
@@ -36,11 +35,7 @@ function useUserSearchCharts() {
           type: 'category',
           boundaryGap: false,
           show: false,
-          data: data.map((_, index) =>
-            dayjs()
-              .add(index - data.length, 'day')
-              .format('yyyy-MM-dd')
-          )
+          data: data.map(el => el.date)
         }
       ],
       yAxis: [{ type: 'value', show: false }],
@@ -59,7 +54,7 @@ function useUserSearchCharts() {
             ])
           },
           emphasis: { focus: 'series' },
-          data
+          data: data.map(el => el.count)
         }
       ]
     })
@@ -95,11 +90,7 @@ function usePerCapitaSearch() {
           type: 'category',
           boundaryGap: false,
           show: false,
-          data: data.map((_, index) =>
-            dayjs()
-              .add(index - data.length, 'day')
-              .format('yyyy-MM-dd')
-          )
+          data: data.map(el => el.date)
         }
       ],
       yAxis: [{ type: 'value', show: false }],
@@ -118,7 +109,7 @@ function usePerCapitaSearch() {
             ])
           },
           emphasis: { focus: 'series' },
-          data
+          data: data.map(el => el.count)
         }
       ]
     })
@@ -135,33 +126,33 @@ export default function SearchCharts() {
   return (
     <div className="w-full flex gap-[34px]">
       <div className="mb-[24px] flex-[50%]">
-        <div className="h-[22px] overflow-hidden text-[rgba(0,0,0,0.65)] text-[14px] leading-[24px] whitespace-nowrap text-ellipsis break-words mb-[8px]">
-          <span className="inline-flex items-center">
-            搜索用户数
-            <Tooltip title="指标说明">
-              <InfoIcon className="cursor-pointer ml-[8px] leading-1" size="1em" />
-            </Tooltip>
-          </span>
-        </div>
+        <Skeleton loading={userLoading} paragraph={{ rows: 2 }}>
+          <div className="h-[22px] overflow-hidden text-[rgba(0,0,0,0.65)] text-[14px] leading-[24px] whitespace-nowrap text-ellipsis break-words mb-[8px]">
+            <span className="inline-flex items-center">
+              搜索用户数
+              <Tooltip title="指标说明">
+                <InfoIcon className="cursor-pointer ml-[8px] leading-1" size="1em" />
+              </Tooltip>
+            </span>
+          </div>
 
-        <Spin spinning={userLoading}>
           <div className="h-[45px] w-full" ref={userRef}></div>
-        </Spin>
+        </Skeleton>
       </div>
 
       <div className="mb-[24px] flex-[50%]">
-        <div className="h-[22px] overflow-hidden text-[rgba(0,0,0,0.65)] text-[14px] leading-[24px] whitespace-nowrap text-ellipsis break-words mb-[8px]">
-          <span className="inline-flex items-center">
-            人均搜索次数
-            <Tooltip title="指标说明">
-              <InfoIcon className="cursor-pointer ml-[8px] leading-1" size="1em" />
-            </Tooltip>
-          </span>
-        </div>
+        <Skeleton loading={perLoading} paragraph={{ rows: 2 }}>
+          <div className="h-[22px] overflow-hidden text-[rgba(0,0,0,0.65)] text-[14px] leading-[24px] whitespace-nowrap text-ellipsis break-words mb-[8px]">
+            <span className="inline-flex items-center">
+              人均搜索次数
+              <Tooltip title="指标说明">
+                <InfoIcon className="cursor-pointer ml-[8px] leading-1" size="1em" />
+              </Tooltip>
+            </span>
+          </div>
 
-        <Spin spinning={perLoading}>
           <div className="h-[45px] w-full" ref={perRef}></div>
-        </Spin>
+        </Skeleton>
       </div>
     </div>
   )
