@@ -47,9 +47,9 @@ export default function RootLayout({
                   </main>
                 ))
                 .otherwise(() => (
-                  <div className="h-screen w-screen flex">
+                  <div className="h-screen w-screen flex overflow-hidden">
                     <AppSidebar />
-                    <main className="h-full flex-1 flex flex-col">
+                    <main className="h-full flex-1 flex flex-col overflow-auto">
                       <AppHeader />
                       <div className="flex-1 py-[32px] px-[40px]">{children}</div>
                       <AppFooter />
