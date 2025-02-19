@@ -6,6 +6,7 @@ import { Menu, MenuProps } from 'antd'
 import { useRouter, usePathname } from 'next/navigation'
 import { clone, uniq } from 'ramda'
 import { cn } from '@/lib/utils'
+import { useMemoizedFn, useUpdateEffect } from 'ahooks'
 
 type MenuItem = Required<MenuProps>['items'][number]
 
@@ -55,8 +56,7 @@ export default function AppSidebar() {
     router.push(menu.key)
   }
 
-  useEffect(() => {
-    setSelectedMenuKey([pathname])
+  const updateOpenKeys = useMemoizedFn(() => {
     setOpenMenuKeys(pre => {
       if (pre.includes(pathname)) return pre
 
@@ -68,10 +68,25 @@ export default function AppSidebar() {
       })
       return uniq(newList)
     })
+  })
+
+  useEffect(() => {
+    setSelectedMenuKey([pathname])
+    updateOpenKeys()
   }, [pathname])
 
+  useUpdateEffect(() => {
+    if (!inlineCollapsed) {
+      updateOpenKeys()
+    }
+  }, [inlineCollapsed])
+
   return (
-    <div className={cn('!h-full relative', inlineCollapsed ? 'w-[65px]' : 'w-[257px]')}>
+    <aside
+      className={cn(
+        '!h-full relative border-[rgba(5,5,5,0.06)] border-r border-solid box-border',
+        inlineCollapsed ? 'w-[65px]' : 'w-[257px]'
+      )}>
       <div
         className="flex items-center justify-center size-[24px] rounded-[24px] z-[101] cursor-pointer absolute bg-[#fff] shadow-md right-[-12px] top-[50px]"
         onClick={() => setInlineCollapsed(!inlineCollapsed)}>
@@ -93,6 +108,6 @@ export default function AppSidebar() {
         onOpenChange={setOpenMenuKeys}
         onClick={handleClick}
       />
-    </div>
+    </aside>
   )
 }
