@@ -1,21 +1,34 @@
 import { sleep } from '@/utils/promise'
+import { SalesDataModel } from './model'
+import dayjs from 'dayjs'
+import { faker } from '@faker-js/faker'
 
 export async function getSalesData() {
   await sleep(1000)
 
-  const salesData = [
-    { name: '1月', value: 229 },
-    { name: '2月', value: 767 },
-    { name: '3月', value: 339 },
-    { name: '4月', value: 573 },
-    { name: '5月', value: 745 },
-    { name: '6月', value: 626 },
-    { name: '7月', value: 224 },
-    { name: '8月', value: 707 },
-    { name: '9月', value: 281 },
-    { name: '10月', value: 1033 },
-    { name: '11月', value: 1039 },
-    { name: '12月', value: 1008 }
-  ]
+  const salesData: SalesDataModel = {
+    annualSalesRevenue: [],
+    salesRank: []
+  }
+
+  for (let i = 0; i < 12; i++) {
+    const month =
+      dayjs()
+        .add(i - 12, 'months')
+        .month() + 1
+    salesData.annualSalesRevenue.push({
+      name: `${month}月`,
+      value: faker.number.int({ min: 100, max: 2000 })
+    })
+  }
+
+  for (let i = 0; i < 7; i++) {
+    salesData.salesRank.push({
+      rank: i + 1,
+      store: `工专路 ${i} 号店`,
+      sales: faker.number.int({ min: 100000, max: 800000 })
+    })
+  }
+
   return salesData
 }

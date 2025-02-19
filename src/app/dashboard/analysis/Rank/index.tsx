@@ -4,7 +4,7 @@ import { useState } from 'react'
 import RankPanel from './RankPanel'
 import { getSalesData } from './mock'
 import { useQuery } from '@tanstack/react-query'
-import { Button, Card, Tabs, DatePicker, TimeRangePickerProps, Space, Spin } from 'antd'
+import { Button, Card, Tabs, DatePicker, TimeRangePickerProps, Space, Skeleton } from 'antd'
 import dayjs from 'dayjs'
 
 const { RangePicker } = DatePicker
@@ -58,6 +58,8 @@ export default function Rank() {
     queryFn: getSalesData
   })
 
+  const { annualSalesRevenue, salesRank } = data || {}
+
   return (
     <Card className="!mb-[24px]">
       <Tabs
@@ -68,26 +70,32 @@ export default function Rank() {
             key: 'salesVolume',
             label: '销售额',
             children: (
-              <Spin spinning={isLoading}>
+              <Skeleton loading={isLoading}>
                 <RankPanel
                   title="门店销售额排名"
                   loading={isLoading}
-                  data={{ chart: data, rank: data }}
+                  data={{
+                    chart: annualSalesRevenue,
+                    rank: salesRank?.map(el => ({ name: el.store, value: el.sales }))
+                  }}
                 />
-              </Spin>
+              </Skeleton>
             )
           },
           {
             key: 'visits',
             label: '访问量',
             children: (
-              <Spin spinning={isLoading}>
+              <Skeleton loading={isLoading}>
                 <RankPanel
                   title="门店访问量排名"
                   loading={isLoading}
-                  data={{ chart: data, rank: data }}
+                  data={{
+                    chart: annualSalesRevenue,
+                    rank: salesRank?.map(el => ({ name: el.store, value: el.sales }))
+                  }}
                 />
-              </Spin>
+              </Skeleton>
             )
           }
         ]}
