@@ -69,3 +69,10 @@ export interface SalesCategoryProportionModel {
   name: string
   value: number
 }
+
+export interface RealTimeTransactionStatusActivitiesModel {
+  dayTotalTransaction: number
+  salesTargetCompletionRate: number
+  activityDeadline: number
+  secondTotalTransaction: number
+}
