@@ -2,7 +2,8 @@
 
 import { cn } from '@/lib/utils'
 import { ECOption, useEcharts } from '@/utils/echarts'
-import { memo, useMemo } from 'react'
+import { Skeleton } from 'antd'
+import { memo, useEffect, useState } from 'react'
 
 export interface RankData {
   chart?: {
@@ -17,15 +18,17 @@ export interface RankData {
 
 export interface RankPanelProps {
   title: string
-  loading?: boolean
+  loading: boolean
   data: RankData | undefined
 }
 
-function RankPanel({ title, data }: RankPanelProps) {
+function RankPanel({ title, data, loading }: RankPanelProps) {
+  const [options, setOptions] = useState<ECOption>({})
+
   const { chart, rank } = data || {}
 
-  const options = useMemo<ECOption>(
-    () => ({
+  useEffect(() => {
+    setOptions({
       tooltip: {
         trigger: 'axis',
         axisPointer: { type: 'shadow' }
@@ -48,36 +51,37 @@ function RankPanel({ title, data }: RankPanelProps) {
         }
       ],
       color: ['#2188ff']
-    }),
-    [chart]
-  )
+    })
+  }, [chart])
 
-  const { containerRef } = useEcharts(options)
+  const { containerRef } = useEcharts(options, { forceUpdate: 'dispose' })
 
   return (
-    <div className="flex h-[300px] w-full">
-      <div className="flex-[66.66%] h-full" ref={containerRef}></div>
-      <div className="size-full flex-[33.33%] p-[0_32px_32px_72px] text-[14px]">
-        <h4 className="mb-[0.5em] font-[500]">{title}</h4>
-        <ul className="m-[25px_0_0] p-0 list-none">
-          {rank?.map((el, index) => (
-            <li key={el.name} className="flex items-center mt-[16px]">
-              <span
-                className={cn(
-                  'size-[20px] text-[12px] mt-[1.5px] mr-[16px] font-[600] leading-[20px] text-center rounded-[20px]',
-                  index < 3 ? 'text-[#fff] bg-[rgba(0,0,0,0.85)]' : 'bg-[rgba(0,0,0,0.04)]'
-                )}>
-                {index + 1}
-              </span>
-              <span className="flex-1 mr-[8px] overflow-hidden whitespace-nowrap text-ellipsis">
-                {el.name}
-              </span>
-              <span>{el.value.toLocaleString()}</span>
-            </li>
-          ))}
-        </ul>
+    <Skeleton loading={loading}>
+      <div className="flex h-[300px] w-full">
+        <div className="flex-[66.66%] h-full" ref={containerRef}></div>
+        <div className="size-full flex-[33.33%] p-[0_32px_32px_72px] text-[14px]">
+          <h4 className="mb-[0.5em] font-[500]">{title}</h4>
+          <ul className="m-[25px_0_0] p-0 list-none">
+            {rank?.map((el, index) => (
+              <li key={el.name} className="flex items-center mt-[16px]">
+                <span
+                  className={cn(
+                    'size-[20px] text-[12px] mt-[1.5px] mr-[16px] font-[600] leading-[20px] text-center rounded-[20px]',
+                    index < 3 ? 'text-[#fff] bg-[rgba(0,0,0,0.85)]' : 'bg-[rgba(0,0,0,0.04)]'
+                  )}>
+                  {index + 1}
+                </span>
+                <span className="flex-1 mr-[8px] overflow-hidden whitespace-nowrap text-ellipsis">
+                  {el.name}
+                </span>
+                <span>{el.value.toLocaleString()}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
-    </div>
+    </Skeleton>
   )
 }
 

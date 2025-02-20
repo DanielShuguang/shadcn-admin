@@ -1,10 +1,10 @@
-import { sleep } from '@/utils/promise'
-import { KeywordRankModel, SearchDataModel } from './model'
+import { randomSleep } from '@/utils/promise'
 import dayjs from 'dayjs'
 import { faker } from '@faker-js/faker'
+import { SearchDataModel, KeywordRankModel } from '@/app/types/dashboard'
 
 export async function mockSearchCharts() {
-  await sleep(1000)
+  await randomSleep()
 
   const list: SearchDataModel[] = []
 
@@ -21,7 +21,7 @@ export async function mockSearchCharts() {
 }
 
 export async function mockSearchKeywordsRank() {
-  await sleep(1000)
+  await randomSleep()
   const list: KeywordRankModel[] = []
 
   for (let i = 0; i < 50; i++) {

@@ -1,3 +1,15 @@
+export interface KeywordRankModel {
+  keyword: string
+  rank: number
+  user: number
+  week: number
+}
+
+export interface SearchDataModel {
+  count: number
+  date: string
+}
+
 export interface OverviewModel {
   salesVolume: SalesVolume
   visit: Visit
@@ -35,4 +47,25 @@ export interface OperatingActivities {
   percent: number
   dayTrend: number
   weekTrend: number
+}
+
+export interface SalesDataModel {
+  salesRank: SalesRank[]
+  annualSalesRevenue: AnnualSalesRevenue[]
+}
+
+export interface AnnualSalesRevenue {
+  name: string
+  value: number
+}
+
+export interface SalesRank {
+  rank: number
+  sales: number
+  store: string
+}
+
+export interface SalesCategoryProportionModel {
+  name: string
+  value: number
 }

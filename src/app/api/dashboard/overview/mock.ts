@@ -1,10 +1,10 @@
-import { sleep } from '@/utils/promise'
-import { OverviewModel } from './model'
+import { OverviewModel } from '@/app/types/dashboard'
+import { randomSleep } from '@/utils/promise'
 import { faker } from '@faker-js/faker'
 import dayjs from 'dayjs'
 
 export async function mockOverviewData() {
-  await sleep(1000)
+  await randomSleep()
 
   const saleTotal = faker.number.int({ min: 10000, max: 500000 })
   const visitTotal = faker.number.int({ min: 500, max: 10000 })

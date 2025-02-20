@@ -2,10 +2,11 @@
 
 import { useState } from 'react'
 import RankPanel from './RankPanel'
-import { getSalesData } from './mock'
 import { useQuery } from '@tanstack/react-query'
 import { Button, Card, Tabs, DatePicker, TimeRangePickerProps, Space, Skeleton } from 'antd'
 import dayjs from 'dayjs'
+import { request } from '@/utils/promise'
+import { SalesDataModel } from '@/app/types/dashboard'
 
 const { RangePicker } = DatePicker
 
@@ -55,10 +56,10 @@ export default function Rank() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['salesData', date],
-    queryFn: getSalesData
+    queryFn: () => request<SalesDataModel>('/api/dashboard/rank')
   })
 
-  const { annualSalesRevenue, salesRank } = data || {}
+  const { annualSalesRevenue, salesRank } = data?.data || {}
 
   return (
     <Card className="!mb-[24px]">
@@ -70,32 +71,28 @@ export default function Rank() {
             key: 'salesVolume',
             label: '销售额',
             children: (
-              <Skeleton loading={isLoading}>
-                <RankPanel
-                  title="门店销售额排名"
-                  loading={isLoading}
-                  data={{
-                    chart: annualSalesRevenue,
-                    rank: salesRank?.map(el => ({ name: el.store, value: el.sales }))
-                  }}
-                />
-              </Skeleton>
+              <RankPanel
+                title="门店销售额排名"
+                loading={isLoading}
+                data={{
+                  chart: annualSalesRevenue,
+                  rank: salesRank?.map(el => ({ name: el.store, value: el.sales }))
+                }}
+              />
             )
           },
           {
             key: 'visits',
             label: '访问量',
             children: (
-              <Skeleton loading={isLoading}>
-                <RankPanel
-                  title="门店访问量排名"
-                  loading={isLoading}
-                  data={{
-                    chart: annualSalesRevenue,
-                    rank: salesRank?.map(el => ({ name: el.store, value: el.sales }))
-                  }}
-                />
-              </Skeleton>
+              <RankPanel
+                loading={isLoading}
+                title="门店访问量排名"
+                data={{
+                  chart: annualSalesRevenue,
+                  rank: salesRank?.map(el => ({ name: el.store, value: el.sales }))
+                }}
+              />
             )
           }
         ]}
@@ -104,7 +101,7 @@ export default function Rank() {
             <DefaultTabBar {...props} />
 
             <div className="flex absolute right-0 top-0">
-              <Space.Compact className="mr-[15px]">
+              <Space.Compact className="mr-[15px] max-[992px]:!hidden">
                 {datePresets.map(preset => (
                   <Button
                     key={preset.value}

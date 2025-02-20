@@ -1,18 +1,15 @@
 'use client'
 
 import { Skeleton, Table } from 'antd'
-import React, { useEffect, useState } from 'react'
-import { mockSearchKeywordsRank } from './mock'
 import { useQuery } from '@tanstack/react-query'
-import { KeywordRankModel } from './model'
 import { ColumnsType } from 'antd/es/table'
+import { KeywordRankModel } from '@/app/types/dashboard'
+import { request } from '@/utils/promise'
 
 function useSearchKeywordsRank() {
-  const [keywordsRankData, setKeywordsRankData] = useState<KeywordRankModel[]>([])
-
   const { data, isLoading } = useQuery({
     queryKey: ['search-keywords-rank'],
-    queryFn: mockSearchKeywordsRank
+    queryFn: () => request<KeywordRankModel[]>('/api/dashboard/hotSearch')
   })
 
   const columns: ColumnsType<KeywordRankModel> = [
@@ -27,13 +24,7 @@ function useSearchKeywordsRank() {
     }
   ]
 
-  useEffect(() => {
-    if (!data) return
-
-    setKeywordsRankData(data)
-  }, [data])
-
-  return { columns, isLoading, keywordsRankData }
+  return { columns, isLoading, keywordsRankData: data?.data || [] }
 }
 
 export default function SearchKeywordsRank() {
@@ -44,6 +35,7 @@ export default function SearchKeywordsRank() {
       <Table
         columns={columns}
         size="small"
+        rowKey="keyword"
         pagination={{ pageSize: 5 }}
         dataSource={keywordsRankData}
       />

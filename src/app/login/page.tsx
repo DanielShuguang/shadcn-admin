@@ -3,54 +3,47 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React from 'react'
-import { Button, Card, Checkbox, Form, FormRule, Input } from 'antd'
+import { Button, Card, Checkbox, Form, Input, message } from 'antd'
 import { LoginModel } from './model'
-
-const reservedAccount = {
-  username: ['admin', 'user'],
-  password: 'shadcn.ui'
-}
-
-const userValidator: FormRule = {
-  validator: (_, val, callback) => {
-    if (reservedAccount.username.includes(val)) {
-      callback()
-    }
-    callback('用户名不存在')
-  }
-}
-
-const passwordValidator: FormRule = {
-  validator: (_, val, callback) => {
-    if (reservedAccount.password === val) {
-      callback()
-    }
-    callback('密码错误')
-  }
-}
+import { useMutation } from '@tanstack/react-query'
+import { request } from '@/utils/promise'
+import { useMemoizedFn, useUpdateEffect } from 'ahooks'
 
 export default function Login() {
   const [form] = Form.useForm<LoginModel>()
 
   const router = useRouter()
 
-  function onSubmit(_values: LoginModel) {
-    // TODO 获取 token
-    router.push('/dashboard/analysis')
-  }
+  const { isPending, mutateAsync, data, isSuccess } = useMutation({
+    mutationKey: ['login'],
+    mutationFn: (body: LoginModel) =>
+      request<string>('/api/login', { method: 'post', body: JSON.stringify(body) })
+  })
+
+  const afterSubmit = useMemoizedFn(() => {
+    if (data?.data) {
+      // TODO 获取 token
+      router.push('/dashboard/analysis')
+    } else {
+      message.error(data?.message || '登录失败')
+    }
+  })
+
+  useUpdateEffect(() => {
+    isSuccess && afterSubmit()
+  }, [isSuccess, afterSubmit])
 
   return (
     <div className="h-full flex flex-col flex-1 items-center justify-center">
       <Card className="w-[450px]" title="用户登录">
-        <Form form={form} onFinish={onSubmit} labelCol={{ span: 4 }}>
+        <Form form={form} onFinish={mutateAsync} labelCol={{ span: 4 }}>
           <Form.Item
             label="用户名"
             name="username"
             rules={[
               { required: true, message: '请输入用户名' },
               { min: 2, message: '至少要有2个字符' },
-              { max: 50, message: '最多50个字符' },
-              userValidator
+              { max: 50, message: '最多50个字符' }
             ]}>
             <Input placeholder="用户名: admin or user" />
           </Form.Item>
@@ -59,11 +52,10 @@ export default function Login() {
             name="password"
             rules={[
               { required: true, message: '请输入密码' },
-              { min: 2, message: '至少要有2个字符' },
-              { max: 50, message: '最多50个字符' },
-              passwordValidator
+              { min: 6, message: '至少要有6个字符' },
+              { max: 50, message: '最多50个字符' }
             ]}>
-            <Input.Password placeholder="密码: shadcn.ui" />
+            <Input.Password placeholder="密码: next.antd" />
           </Form.Item>
 
           <div className="w-full flex justify-between text-sm mb-[15px]">
@@ -73,7 +65,7 @@ export default function Login() {
               忘记密码？
             </Link>
           </div>
-          <Button htmlType="submit" type="primary" block>
+          <Button htmlType="submit" type="primary" loading={isPending} block>
             提交
           </Button>
         </Form>

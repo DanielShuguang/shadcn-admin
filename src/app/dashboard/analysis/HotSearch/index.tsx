@@ -5,7 +5,7 @@ import SearchKeywordsRank from './SearchKeywordsRank'
 
 export default function HotSearch() {
   return (
-    <Card title="线上热门搜索">
+    <Card title="线上热门搜索" className="!mb-[24px]">
       <SearchCharts />
       <SearchKeywordsRank />
     </Card>

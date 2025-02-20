@@ -1,5 +1,12 @@
-import { useDebounceEffect, useSize } from 'ahooks'
-import { BarSeriesOption, LineSeriesOption, PieChart, LineChart, BarChart } from 'echarts/charts'
+import { useDebounceEffect, useSize, useUnmount } from 'ahooks'
+import {
+  BarSeriesOption,
+  LineSeriesOption,
+  PieChart,
+  LineChart,
+  BarChart,
+  PieSeriesOption
+} from 'echarts/charts'
 import {
   TitleComponent,
   TooltipComponent,
@@ -26,6 +33,7 @@ export type ECOption = ComposeOption<
   | TooltipComponentOption
   | GridComponentOption
   | DatasetComponentOption
+  | PieSeriesOption
 >
 
 export function prepareEcharts() {
@@ -45,26 +53,48 @@ export function prepareEcharts() {
   ])
 }
 
-export function useEcharts<Dom extends HTMLElement = HTMLDivElement>(options: ECOption) {
+export interface ChartConfig {
+  /** 更新数据时是否销毁原来数据生成的图表，默认为 false */
+  forceUpdate?: boolean | 'dispose' | 'clear'
+}
+
+export function useEcharts<Dom extends HTMLElement = HTMLDivElement>(
+  options: ECOption,
+  config?: ChartConfig
+) {
+  const { forceUpdate = false } = config || {}
+
   const containerRef = useRef<Dom>(null)
   const chartInstance = useRef<ECharts | null>(null)
 
   function initEcharts() {
     if (!containerRef.current) return
 
-    chartInstance.current?.dispose()
-    chartInstance.current = init(containerRef.current)
+    if (!chartInstance.current) {
+      chartInstance.current = init(containerRef.current)
+    }
   }
 
   useEffect(() => {
     initEcharts()
     chartInstance.current?.setOption(options)
 
-    return () => {
-      chartInstance.current?.clear()
-      chartInstance.current?.dispose()
+    if (forceUpdate) {
+      return () => {
+        if (forceUpdate === 'clear') {
+          chartInstance.current?.clear()
+        } else {
+          chartInstance.current?.dispose()
+          chartInstance.current = null
+        }
+      }
     }
-  }, [options])
+  }, [options, forceUpdate])
+
+  useUnmount(() => {
+    chartInstance.current?.dispose()
+    chartInstance.current = null
+  })
 
   const size = useSize(containerRef)
 

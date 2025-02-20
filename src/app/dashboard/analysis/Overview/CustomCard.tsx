@@ -1,4 +1,4 @@
-import { Card, Skeleton, Tooltip } from 'antd'
+import { Card, Col, Skeleton, Tooltip } from 'antd'
 import { InfoIcon } from 'lucide-react'
 
 export interface CustomCardProps {
@@ -11,7 +11,7 @@ export interface CustomCardProps {
 
 export function CustomCard({ title, statText, footer, main, loading }: CustomCardProps) {
   return (
-    <div className="px-[12px] mb-[24px] xl:max-w-[25%] xl:flex-[25%] sm:max-w-[50%] sm:flex-[50%] max-w-full">
+    <Col className="mb-[24px]" xs={24} sm={12} md={12} lg={12} xl={6}>
       <Skeleton loading={loading}>
         <Card
           title={
@@ -31,6 +31,6 @@ export function CustomCard({ title, statText, footer, main, loading }: CustomCar
           </div>
         </Card>
       </Skeleton>
-    </div>
+    </Col>
   )
 }

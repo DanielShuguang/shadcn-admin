@@ -4,10 +4,10 @@ import { ArrowDownIcon, ArrowUpIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { CustomCard } from './CustomCard'
 import { ECOption, useEcharts } from '@/utils/echarts'
-import { Progress } from 'antd'
+import { Progress, Row } from 'antd'
 import { useQuery } from '@tanstack/react-query'
-import { mockOverviewData } from './mock'
-import { Payment, Visit } from './model'
+import { OverviewModel, Payment, Visit } from '@/app/types/dashboard'
+import { request } from '@/utils/promise'
 
 function renderCorrectArrow(num = 0) {
   if (num < 0) {
@@ -105,16 +105,16 @@ function usePayloadChart(data: Payment | undefined) {
 export default function Overview() {
   const { data, isLoading } = useQuery({
     queryKey: ['overview-data'],
-    queryFn: mockOverviewData
+    queryFn: () => request<OverviewModel>('/api/dashboard/overview')
   })
 
-  const { operatingActivities, payment, salesVolume, visit } = data || {}
+  const { operatingActivities, payment, salesVolume, visit } = data?.data || {}
 
   const { containerRef: visitChartRef } = useInitVisitChart(visit)
   const { containerRef: payloadChartRef } = usePayloadChart(payment)
 
   return (
-    <div className="flex flex-wrap min-w-0 mx-[-12px]">
+    <Row gutter={24}>
       <CustomCard
         loading={isLoading}
         title="总销售额"
@@ -200,6 +200,6 @@ export default function Overview() {
           </div>
         }
       />
-    </div>
+    </Row>
   )
 }

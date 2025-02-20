@@ -3,7 +3,7 @@
 import { ECOption, useEcharts } from '@/utils/echarts'
 import { InfoIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { mockSearchCharts } from './mock'
+import { mockSearchCharts } from '../../../api/dashboard/hotSearch/mock'
 import { Skeleton, Tooltip } from 'antd'
 import { useQuery } from '@tanstack/react-query'
 import { graphic } from 'echarts/core'

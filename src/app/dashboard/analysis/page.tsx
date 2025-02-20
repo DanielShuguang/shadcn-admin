@@ -1,3 +1,4 @@
+import { Col, Row } from 'antd'
 import HotSearch from './HotSearch'
 import Overview from './Overview'
 import Rank from './Rank'
@@ -8,14 +9,14 @@ export default function Analysis() {
     <div>
       <Overview />
       <Rank />
-      <div className="w-full flex gap-[24px] min-[1200px]:flex-nowrap min-[992px]:flex-wrap">
-        <div className="min-[1200px]:flex-[50%] min-[992px]:flex-[100%]">
+      <Row gutter={24}>
+        <Col xs={24} sm={24} md={24} lg={24} xl={12}>
           <HotSearch />
-        </div>
-        <div className="min-[1200px]:flex-[50%] min-[992px]:flex-[100%]">
+        </Col>
+        <Col xs={24} sm={24} md={24} lg={24} xl={12}>
           <SalesCategoryProportion />
-        </div>
-      </div>
+        </Col>
+      </Row>
     </div>
   )
 }

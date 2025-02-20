@@ -1,10 +1,10 @@
-import { sleep } from '@/utils/promise'
-import { SalesDataModel } from './model'
+import { randomSleep } from '@/utils/promise'
 import dayjs from 'dayjs'
 import { faker } from '@faker-js/faker'
+import { SalesDataModel } from '@/app/types/dashboard'
 
-export async function getSalesData() {
-  await sleep(1000)
+export async function mockSalesData() {
+  await randomSleep()
 
   const salesData: SalesDataModel = {
     annualSalesRevenue: [],
