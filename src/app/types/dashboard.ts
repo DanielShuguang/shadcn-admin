@@ -76,3 +76,8 @@ export interface RealTimeTransactionStatusActivitiesModel {
   activityDeadline: number
   secondTotalTransaction: number
 }
+
+export interface ActivitySituationPredictionModel {
+  target: number
+  current: number
+}

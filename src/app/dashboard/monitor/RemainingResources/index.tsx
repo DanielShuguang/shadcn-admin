@@ -4,8 +4,19 @@ import EchartsReact from '@/components/EchartsReact'
 import { ECOption } from '@/utils/echarts'
 import { useUpdateEffect } from 'ahooks'
 import { Card, message } from 'antd'
-import { graphic } from 'echarts/core'
 import { useEffect, useRef, useState } from 'react'
+
+function getChartColor(percent: number) {
+  return percent <= 20
+    ? '#f5222d'
+    : percent <= 40
+    ? '#fa8c16'
+    : percent <= 60
+    ? '#faad14'
+    : percent <= 80
+    ? '#13c2c2'
+    : '#52c41a'
+}
 
 export default function RemainingResources() {
   const eventSource = useRef<EventSource>(null)
@@ -62,12 +73,7 @@ export default function RemainingResources() {
               }
             }
           },
-          color: [
-            new graphic.LinearGradient(0, 1, 0, 0, [
-              { offset: 1, color: 'rgb(11,175,202)' },
-              { offset: 0, color: 'rgb(0,145,255)' }
-            ])
-          ],
+          color: [getChartColor(percent)],
           backgroundStyle: { color: '#fff' },
           outline: {
             borderDistance: 0,
