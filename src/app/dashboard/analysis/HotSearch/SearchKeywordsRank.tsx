@@ -9,7 +9,7 @@ import { request } from '@/utils/promise'
 function useSearchKeywordsRank() {
   const { data, isLoading } = useQuery({
     queryKey: ['search-keywords-rank'],
-    queryFn: () => request<KeywordRankModel[]>('/api/dashboard/hotSearch')
+    queryFn: () => request<KeywordRankModel[]>('/api/dashboard/hotSearch/searchKeywords')
   })
 
   const columns: ColumnsType<KeywordRankModel> = [

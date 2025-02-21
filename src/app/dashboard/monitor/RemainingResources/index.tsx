@@ -1,6 +1,10 @@
 'use client'
 
+import EchartsReact from '@/components/EchartsReact'
+import { ECOption } from '@/utils/echarts'
+import { useUpdateEffect } from 'ahooks'
 import { Card, message } from 'antd'
+import { graphic } from 'echarts/core'
 import { useEffect, useRef, useState } from 'react'
 
 export default function RemainingResources() {
@@ -21,8 +25,6 @@ export default function RemainingResources() {
       eventSource.current?.close()
       initSSE()
     }
-
-    return eventSource
   }
 
   useEffect(() => {
@@ -31,9 +33,57 @@ export default function RemainingResources() {
     return () => eventSource.current?.close()
   }, [])
 
+  const [options, setOptions] = useState<ECOption>({})
+
+  useUpdateEffect(() => {
+    setOptions({
+      series: [
+        {
+          type: 'liquidFill',
+          radius: '75%',
+          center: ['50%', '45%'],
+          data: [
+            {
+              value: [percent / 100],
+              label: {
+                normal: {
+                  formatter: `${percent}%`,
+                  show: true
+                }
+              }
+            }
+          ],
+          label: {
+            normal: {
+              textStyle: {
+                // 数值样式设置
+                color: '#888884',
+                fontSize: 22
+              }
+            }
+          },
+          color: [
+            new graphic.LinearGradient(0, 1, 0, 0, [
+              { offset: 1, color: 'rgb(11,175,202)' },
+              { offset: 0, color: 'rgb(0,145,255)' }
+            ])
+          ],
+          backgroundStyle: { color: '#fff' },
+          outline: {
+            borderDistance: 0,
+            itemStyle: {
+              borderWidth: 2, // 边 宽度
+              borderColor: 'rgba(49,102,255,0.5)'
+            }
+          }
+        }
+      ]
+    } as any)
+  }, [percent])
+
   return (
     <Card title="资源剩余">
-      <div className="h-[160px]"></div>
+      <EchartsReact className="h-[160px]" options={options} />
     </Card>
   )
 }

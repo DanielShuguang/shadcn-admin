@@ -1,25 +1,26 @@
 'use client'
 
-import { ECOption, useEcharts } from '@/utils/echarts'
+import { ECOption } from '@/utils/echarts'
 import { InfoIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { mockSearchCharts } from '../../../api/dashboard/hotSearch/mock'
 import { Skeleton, Tooltip } from 'antd'
 import { useQuery } from '@tanstack/react-query'
 import { graphic } from 'echarts/core'
+import { request } from '@/utils/promise'
+import { SearchDataModel } from '@/app/types/dashboard'
+import EchartsReact from '@/components/EchartsReact'
 
 function useUserSearchCharts() {
   const [options, setOptions] = useState<ECOption>({})
 
   const { data, isLoading } = useQuery({
     queryKey: ['user-search-charts'],
-    queryFn: mockSearchCharts
+    queryFn: () => request<SearchDataModel[]>('/api/dashboard/hotSearch/searchCharts')
   })
 
-  const { containerRef } = useEcharts(options)
-
   useEffect(() => {
-    if (!data) return
+    const xData = data?.data?.map(el => el.date)
+    const yData = data?.data?.map(el => el.count)
 
     setOptions({
       color: ['#2188ff'],
@@ -35,7 +36,7 @@ function useUserSearchCharts() {
           type: 'category',
           boundaryGap: false,
           show: false,
-          data: data.map(el => el.date)
+          data: xData
         }
       ],
       yAxis: [{ type: 'value', show: false }],
@@ -54,13 +55,13 @@ function useUserSearchCharts() {
             ])
           },
           emphasis: { focus: 'series' },
-          data: data.map(el => el.count)
+          data: yData
         }
       ]
     })
   }, [data])
 
-  return { containerRef, isLoading }
+  return { isLoading, options }
 }
 
 function usePerCapitaSearch() {
@@ -68,13 +69,12 @@ function usePerCapitaSearch() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['per-capita-charts'],
-    queryFn: mockSearchCharts
+    queryFn: () => request<SearchDataModel[]>('/api/dashboard/hotSearch/searchCharts')
   })
 
-  const { containerRef } = useEcharts(options)
-
   useEffect(() => {
-    if (!data) return
+    const xData = data?.data?.map(el => el.date)
+    const yData = data?.data?.map(el => el.count)
 
     setOptions({
       color: ['#2188ff'],
@@ -90,7 +90,7 @@ function usePerCapitaSearch() {
           type: 'category',
           boundaryGap: false,
           show: false,
-          data: data.map(el => el.date)
+          data: xData
         }
       ],
       yAxis: [{ type: 'value', show: false }],
@@ -109,19 +109,19 @@ function usePerCapitaSearch() {
             ])
           },
           emphasis: { focus: 'series' },
-          data: data.map(el => el.count)
+          data: yData
         }
       ]
     })
   }, [data])
 
-  return { containerRef, isLoading }
+  return { isLoading, options }
 }
 
 export default function SearchCharts() {
-  const { containerRef: userRef, isLoading: userLoading } = useUserSearchCharts()
+  const { isLoading: userLoading, options: userOptions } = useUserSearchCharts()
 
-  const { containerRef: perRef, isLoading: perLoading } = usePerCapitaSearch()
+  const { isLoading: perLoading, options: perOptions } = usePerCapitaSearch()
 
   return (
     <div className="w-full flex gap-[34px]">
@@ -136,7 +136,7 @@ export default function SearchCharts() {
             </span>
           </div>
 
-          <div className="h-[45px] w-full" ref={userRef}></div>
+          <EchartsReact className="h-[45px] w-full" options={userOptions} />
         </Skeleton>
       </div>
 
@@ -151,7 +151,7 @@ export default function SearchCharts() {
             </span>
           </div>
 
-          <div className="h-[45px] w-full" ref={perRef}></div>
+          <EchartsReact className="h-[45px] w-full" options={perOptions} />
         </Skeleton>
       </div>
     </div>

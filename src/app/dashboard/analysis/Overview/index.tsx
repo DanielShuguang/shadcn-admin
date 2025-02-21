@@ -3,11 +3,12 @@
 import { ArrowDownIcon, ArrowUpIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { CustomCard } from './CustomCard'
-import { ECOption, useEcharts } from '@/utils/echarts'
+import { ECOption } from '@/utils/echarts'
 import { Progress, Row } from 'antd'
 import { useQuery } from '@tanstack/react-query'
 import { OverviewModel, Payment, Visit } from '@/app/types/dashboard'
 import { request } from '@/utils/promise'
+import EchartsReact from '@/components/EchartsReact'
 
 function renderCorrectArrow(num = 0) {
   if (num < 0) {
@@ -25,7 +26,6 @@ function showPositiveNumber(num = 0) {
 
 function useInitVisitChart(data: Visit | undefined) {
   const [options, setOptions] = useState<ECOption>({})
-  const { chartInstance, containerRef } = useEcharts(options)
 
   useEffect(() => {
     setOptions({
@@ -61,13 +61,11 @@ function useInitVisitChart(data: Visit | undefined) {
     })
   }, [data])
 
-  return { chartInstance, containerRef }
+  return { options }
 }
 
 function usePayloadChart(data: Payment | undefined) {
   const [options, setOptions] = useState<ECOption>({})
-
-  const { chartInstance, containerRef } = useEcharts(options)
 
   useEffect(() => {
     setOptions({
@@ -83,7 +81,7 @@ function usePayloadChart(data: Payment | undefined) {
         {
           type: 'category',
           show: false,
-          data: data?.detail.map(el => el.date),
+          data: data?.detail.map(el => el.date) || [],
           axisTick: { alignWithLabel: true }
         }
       ],
@@ -93,13 +91,13 @@ function usePayloadChart(data: Payment | undefined) {
           name: '支付',
           type: 'bar',
           barWidth: '60%',
-          data: data?.detail.map(el => el.count)
+          data: data?.detail.map(el => el.count) || []
         }
       ]
     })
   }, [data])
 
-  return { chartInstance, containerRef }
+  return { options }
 }
 
 export default function Overview() {
@@ -110,8 +108,8 @@ export default function Overview() {
 
   const { operatingActivities, payment, salesVolume, visit } = data?.data || {}
 
-  const { containerRef: visitChartRef } = useInitVisitChart(visit)
-  const { containerRef: payloadChartRef } = usePayloadChart(payment)
+  const { options: visitChartOpts } = useInitVisitChart(visit)
+  const { options: payloadChartOpts } = usePayloadChart(payment)
 
   return (
     <Row gutter={24}>
@@ -148,7 +146,7 @@ export default function Overview() {
         loading={isLoading}
         title="访问量"
         statText={visit?.total.toLocaleString() || 0}
-        main={<div className="h-full" ref={visitChartRef}></div>}
+        main={<EchartsReact className="h-full" options={visitChartOpts} />}
         footer={
           <>
             <span>日访问量</span>
@@ -160,7 +158,7 @@ export default function Overview() {
         loading={isLoading}
         title="支付笔数"
         statText={payment?.total.toLocaleString() || 0}
-        main={<div className="h-full" ref={payloadChartRef}></div>}
+        main={<EchartsReact className="h-full" options={payloadChartOpts} />}
         footer={
           <>
             <span>转化率</span>

@@ -1,10 +1,11 @@
 'use client'
 
 import { SalesCategoryProportionModel } from '@/app/types/dashboard'
-import { ECOption, useEcharts } from '@/utils/echarts'
+import EchartsReact from '@/components/EchartsReact'
+import { ECOption } from '@/utils/echarts'
 import { request } from '@/utils/promise'
 import { useQuery } from '@tanstack/react-query'
-import { Button, Card, Dropdown, MenuProps, Radio, Skeleton } from 'antd'
+import { Card, Dropdown, MenuProps, Radio, Skeleton } from 'antd'
 import { EllipsisIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
@@ -39,15 +40,13 @@ function useSaleCategoryChart(activeType: string) {
     })
   }, [data, isSuccess])
 
-  const { containerRef } = useEcharts(options)
-
-  return { isLoading, containerRef }
+  return { isLoading, options }
 }
 
 export default function SalesCategoryProportion() {
   const [activeType, setActiveType] = useState('all')
 
-  const { containerRef, isLoading } = useSaleCategoryChart(activeType)
+  const { options, isLoading } = useSaleCategoryChart(activeType)
 
   const dropdownItems: MenuProps['items'] = [
     {
@@ -80,7 +79,7 @@ export default function SalesCategoryProportion() {
         </Dropdown>
       }>
       <Skeleton loading={isLoading} paragraph={{ rows: 4 }}>
-        <div className="w-full h-[389px]" ref={containerRef}></div>
+        <EchartsReact className="w-full h-[389px]" options={options} />
       </Skeleton>
     </Card>
   )

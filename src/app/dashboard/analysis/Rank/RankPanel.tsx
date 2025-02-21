@@ -1,7 +1,8 @@
 'use client'
 
+import EchartsReact from '@/components/EchartsReact'
 import { cn } from '@/lib/utils'
-import { ECOption, useEcharts } from '@/utils/echarts'
+import { ECOption } from '@/utils/echarts'
 import { Skeleton } from 'antd'
 import { memo, useEffect, useState } from 'react'
 
@@ -54,12 +55,10 @@ function RankPanel({ title, data, loading }: RankPanelProps) {
     })
   }, [chart])
 
-  const { containerRef } = useEcharts(options, { forceUpdate: 'dispose' })
-
   return (
     <Skeleton loading={loading}>
       <div className="flex h-[300px] w-full">
-        <div className="flex-[66.66%] h-full" ref={containerRef}></div>
+        <EchartsReact className="flex-[66.66%] h-full" options={options} />
         <div className="size-full flex-[33.33%] p-[0_32px_32px_72px] text-[14px]">
           <h4 className="mb-[0.5em] font-[500]">{title}</h4>
           <ul className="m-[25px_0_0] p-0 list-none">

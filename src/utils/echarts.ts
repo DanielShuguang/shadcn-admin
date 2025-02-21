@@ -24,7 +24,8 @@ import { ComposeOption, ECharts, init } from 'echarts/core'
 import { use } from 'echarts/core'
 import { LabelLayout, UniversalTransition } from 'echarts/features'
 import { CanvasRenderer } from 'echarts/renderers'
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
+import 'echarts-liquidfill'
 
 export type ECOption = ComposeOption<
   | BarSeriesOption
@@ -56,13 +57,14 @@ export function prepareEcharts() {
 export interface ChartConfig {
   /** 更新数据时是否销毁原来数据生成的图表，默认为 false */
   forceUpdate?: boolean | 'dispose' | 'clear'
+  resize?: boolean | number
 }
 
 export function useEcharts<Dom extends HTMLElement = HTMLDivElement>(
   options: ECOption,
   config?: ChartConfig
 ) {
-  const { forceUpdate = false } = config || {}
+  const { forceUpdate = false, resize = 500 } = config || {}
 
   const containerRef = useRef<Dom>(null)
   const chartInstance = useRef<ECharts | null>(null)
@@ -98,12 +100,14 @@ export function useEcharts<Dom extends HTMLElement = HTMLDivElement>(
 
   const size = useSize(containerRef)
 
+  const resizeMs = useMemo(() => (typeof resize === 'number' ? resize : 500), [resize])
+
   useDebounceEffect(
     () => {
       chartInstance.current?.resize()
     },
     [size],
-    { wait: 500 }
+    { wait: resizeMs }
   )
 
   return { containerRef, chartInstance }
