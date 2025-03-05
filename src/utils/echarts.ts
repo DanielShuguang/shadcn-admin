@@ -2,10 +2,12 @@ import { useDebounceEffect, useSize, useUnmount } from 'ahooks'
 import {
   BarSeriesOption,
   LineSeriesOption,
+  GaugeSeriesOption,
   PieChart,
   LineChart,
   BarChart,
-  PieSeriesOption
+  PieSeriesOption,
+  GaugeChart
 } from 'echarts/charts'
 import {
   TitleComponent,
@@ -25,7 +27,9 @@ import { use } from 'echarts/core'
 import { LabelLayout, UniversalTransition } from 'echarts/features'
 import { CanvasRenderer } from 'echarts/renderers'
 import { useEffect, useMemo, useRef } from 'react'
+import { WordCloudSeriesOption } from 'echarts/types/dist/echarts'
 import 'echarts-liquidfill'
+import 'echarts-wordcloud'
 
 export type ECOption = ComposeOption<
   | BarSeriesOption
@@ -35,6 +39,8 @@ export type ECOption = ComposeOption<
   | GridComponentOption
   | DatasetComponentOption
   | PieSeriesOption
+  | WordCloudSeriesOption
+  | GaugeSeriesOption
 >
 
 export function prepareEcharts() {
@@ -48,6 +54,7 @@ export function prepareEcharts() {
     BarChart,
     LineChart,
     PieChart,
+    GaugeChart,
     LabelLayout,
     UniversalTransition,
     CanvasRenderer

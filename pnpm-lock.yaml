@@ -44,6 +44,9 @@ importers:
       echarts-liquidfill:
         specifier: ^3.1.0
         version: 3.1.0(echarts@5.6.0)
+      echarts-wordcloud:
+        specifier: ^2.1.0
+        version: 2.1.0(echarts@5.6.0)
       lucide-react:
         specifier: ^0.474.0
         version: 0.474.0(react@19.0.0)
@@ -1635,6 +1638,11 @@ packages:
 
   echarts-liquidfill@3.1.0:
     resolution: {integrity: sha1-TscPNpc4LQQEyV//nz6N2FyDd9o=}
+    peerDependencies:
+      echarts: ^5.0.1
+
+  echarts-wordcloud@2.1.0:
+    resolution: {integrity: sha512-Kt1JmbcROgb+3IMI48KZECK2AP5lG6bSsOEs+AsuwaWJxQom31RTNd6NFYI01E/YaI1PFZeueaupjlmzSQasjQ==}
     peerDependencies:
       echarts: ^5.0.1
 
@@ -4974,6 +4982,10 @@ snapshots:
   eastasianwidth@0.2.0: {}
 
   echarts-liquidfill@3.1.0(echarts@5.6.0):
+    dependencies:
+      echarts: 5.6.0
+
+  echarts-wordcloud@2.1.0(echarts@5.6.0):
     dependencies:
       echarts: 5.6.0
 

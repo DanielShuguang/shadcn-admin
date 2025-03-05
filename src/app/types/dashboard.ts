@@ -81,3 +81,8 @@ export interface ActivitySituationPredictionModel {
   target: number
   current: number
 }
+
+export interface PopularSearchesModel {
+  city: string
+  count: number
+}
