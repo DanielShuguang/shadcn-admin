@@ -45,6 +45,7 @@ export default function VoucherVerificationEfficiency() {
           },
           axisTick: {
             distance: -30,
+            length: 0,
             lineStyle: { color: '#fff', width: 2 }
           },
           anchor: {
